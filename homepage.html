@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    width: 100%;
+}
+
+header {
+    background-color: #ff6347;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    background-color: white;
+    padding: 20px;
+    margin: 10px 0;
+    width: 25%;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form input {
+    margin: 5px 0;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 40%;
+    padding: 10px;
+    background-color: #e64727;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ff4500;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #ff6347;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+    </style>
+    <title>Online Food Ordering System</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Foodie!!!</h1>
+    </header>
+
+    <main>
+        <section id="userLogin">
+            <h2>User Login</h2>
+            <form id="userLoginForm">
+                <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            </form>
+            <button id="login">Login</button>
+            <button id="signup">Signup</button>
+             
+        </section>
+
+
+        <section id="adminLogin">
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            </form>
+            <button id="adlogin">Login</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Foodie. All rights reserved.</p>
+    </footer>
+
+    <script>
+    document.getElementById('userLoginForm').addEventListener('login', function(event) {
+    event.preventDefault();
+    // Add your form submission logic here
+    alert('Logged in successfully!');});
+    document.getElementById('userLoginForm').addEventListener('signup', function(event) {
+    event.preventDefault();
+    // Add your form submission logic here
+    });
+    document.getElementById('adminLoginForm').addEventListener('adlogin', function(event) {
+    event.preventDefault();
+    // Add your form submission logic here
+    alert('Logged in successfully!');});
+    
+    document.getElementById('signup').addEventListener('click', function() {
+        window.location.href = 'signuppage.html';
+    });
+    document.getElementById('login').addEventListener('click', function() {
+        window.location.href = 'menupage.html';
+    });
+    document.getElementById('adlogin').addEventListener('click', function() {
+        window.location.href = 'adminpage.html';
+    });
+    </script>
+</body>
+</html>
