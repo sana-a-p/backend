@@ -204,7 +204,21 @@
             if (activeSection) {
                 activeSection.classList.add('active');
             }
-        }
+        }// Add event listeners for form submissions
+        document.getElementById('addFoodForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Food item added: ' + document.getElementById('foodName').value);
+        });
+
+        document.getElementById('modifyFoodForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Food item modified: ' + document.getElementById('modifyFoodName').value);
+        });
+
+        document.getElementById('deleteFoodForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Food item deleted: ' + document.getElementById('deleteFoodName').value);
+        });
     </script>
 </body>
 </html>
