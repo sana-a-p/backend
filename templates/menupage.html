@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #ff6347;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+}
+
+#menu {
+    margin-bottom: 20px;
+}
+
+.food-item {
+    background-color: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+}
+
+.controls button {
+    padding: 5px;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.controls button:hover {
+    background-color: #ff4500;
+}
+
+.item-count {
+    width: 40px;
+    text-align: center;
+    margin: 0 10px;
+}
+
+#placeOrder {
+    padding: 10px;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#placeOrder:hover {
+    background-color: #ff4500;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #ff6347;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+    </style>
+    <title>Food Menu</title>
+</head>
+<body>
+    <header>
+        <h1>Food Menu</h1>
+    </header>
+    
+    <main>
+        <section id="menu">
+            <h2>Select Your Items</h2>
+            <div class="food-item">
+                <span>Pizza - $10</span>
+                <div class="controls">
+                    <button class="decrease">-</button>
+                    <input type="number" value="0" class="item-count" min="0" readonly>
+                    <button class="increase">+</button>
+                </div>
+            </div>
+            <div class="food-item">
+                <span>Burger - $8</span>
+                <div class="controls">
+                    <button class="decrease">-</button>
+                    <input type="number" value="0" class="item-count" min="0" readonly>
+                    <button class="increase">+</button>
+                </div>
+            </div>
+            <div class="food-item">
+                <span>Pasta - $12</span>
+                <div class="controls">
+                    <button class="decrease">-</button>
+                    <input type="number" value="0" class="item-count" min="0" readonly>
+                    <button class="increase">+</button>
+                </div>
+            </div>
+            <div class="food-item">
+                <span>Sushi - $15</span>
+                <div class="controls">
+                    <button class="decrease">-</button>
+                    <input type="number" value="0" class="item-count" min="0" readonly>
+                    <button class="increase">+</button>
+                </div>
+            </div>
+        </section>
+        
+        <button id="placeOrder">Place Order</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Foodie. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.food-item').forEach(item => {
+    const increaseButton = item.querySelector('.increase');
+    const decreaseButton = item.querySelector('.decrease');
+    const countInput = item.querySelector('.item-count');
+
+    increaseButton.addEventListener('click', () => {
+        countInput.value = parseInt(countInput.value) + 1;
+    });
+
+    decreaseButton.addEventListener('click', () => {
+        if (countInput.value > 0) {
+            countInput.value = parseInt(countInput.value) - 1;
+        }
+    });
+});
+
+document.getElementById('placeOrder').addEventListener('click', () => {
+    let orderSummary = "Your Order:\n";
+    let totalCost = 0;
+    
+    document.querySelectorAll('.food-item').forEach(item => {
+        const name = item.querySelector('span').textContent.split(' - ')[0];
+        const price = parseInt(item.querySelector('span').textContent.split('$')[1]);
+        const count = parseInt(item.querySelector('.item-count').value);
+
+        if (count > 0) {
+            orderSummary += `${name}: ${count} x $${price} = $${count * price}\n`;
+            totalCost += count * price;
+        }
+    });
+
+    if (totalCost > 0) {
+        orderSummary += `Total: $${totalCost}`;
+        alert(orderSummary);
+    } else {
+        alert("No items selected.");
+    }
+});
+
+    </script>
+</body>
+</html>

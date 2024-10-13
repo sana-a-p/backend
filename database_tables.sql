@@ -1,3 +1,4 @@
+CREATE database fooddelivery;
 use fooddelivery;
 CREATE TABLE user (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,5 +42,3 @@ CREATE TABLE order_details (
     FOREIGN KEY (menu_id) REFERENCES menu(menu_id)
 );
 
-
-show tables;
