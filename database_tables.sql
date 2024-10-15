@@ -42,4 +42,4 @@ CREATE TABLE order_details (
     FOREIGN KEY (order_id) REFERENCES orders (order_id),
     FOREIGN KEY (menu_id) REFERENCES menu(menu_id)
 );
-
+INSERT INTO admin (email,password) VALUES ("admin123@gmail.com","admin@123");
