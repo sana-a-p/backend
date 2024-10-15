@@ -1,9 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for,flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from flask_cors import CORS
+
+
+  # Enable CORS for all routes
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24) 
+CORS(app)
+app.config['SECRET_KEY'] = os.urandom(24)
 # MySQL configurations
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'san@06FEB2004'
@@ -30,13 +36,13 @@ def user_login():
         cur.close()
 
     # Check if user exists and if the password matches
-    if user and check_password_hash(user[0], password):  # Assuming password is hashed
-        return redirect(url_for('menu'))  # Redirect to the menu page after successful login
+    if user and check_password_hash(user[0], password):
+        return redirect(url_for('menu'))
     else:
-        flash("Invalid email or password!")  # Show an error message
-        return redirect(url_for('home'))  # Redirect back to the homepage
+        flash("Invalid email or password!")
+        return redirect(url_for('home'))
 
-# Admin login handling (create a new route)
+# Admin login handling
 @app.route('/admin_login', methods=['POST'])
 def admin_login():
     email = request.form['email']
@@ -44,24 +50,21 @@ def admin_login():
 
     cur = mysql.connection.cursor()
     try:
-        # Fetch admin by email
-        cur.execute("SELECT password FROM admin WHERE email = %s", (email,))  # Assuming you have an admin table
+        cur.execute("SELECT password FROM admin WHERE email = %s", (email,))
         admin = cur.fetchone()
     finally:
         cur.close()
 
-    # Check if admin exists and if the password matches
-    if admin and admin[0] == password:  # Assuming password is hashed
-        return redirect(url_for('admin_dashboard'))  # Redirect to the admin dashboard
+    if admin and admin[0]==password:  # Check hashed password
+        return redirect(url_for('admin_dashboard'))
     else:
-        flash("Invalid email or password!")  # Show an error message
-        return redirect(url_for('home'))  # Redirect back to the homepage
+        flash("Invalid email or password!")
+        return redirect(url_for('home'))
+
 # Route for handling user signup
 @app.route('/signuppage.html', methods=['GET', 'POST'])
 def signup():
     if request.method == "POST":
-        
-        # Get form data
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
@@ -69,33 +72,85 @@ def signup():
         address = request.form['address']
         phone = request.form['phone']
 
-        # Check if passwords match
         if password != confirm_password:
             return render_template('signuppage.html', error="Passwords do not match!")
 
-        # Hash the password before storing
         hashed_password = generate_password_hash(password)
 
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO user (name, email, password, address, phone_no) VALUES (%s, %s, %s, %s, %s)",(name, email, hashed_password, address, phone))
+        cur.execute("INSERT INTO user (name, email, password, address, phone_no) VALUES (%s, %s, %s, %s, %s)",
+                    (name, email, hashed_password, address, phone))
         mysql.connection.commit()
         cur.close()
 
-        # Redirect to menu page after successful signup
         return redirect(url_for('menu'))
     
-    else:
-        # Render the signup page on GET request
-        return render_template('signuppage.html')
+    return render_template('signuppage.html')
 
-# Route for menu page (after signup)
+# Route for menu page
 @app.route('/menu')
 def menu():
     return render_template('menupage.html')
+
+
+@app.route('/add_food', methods=['POST'])
+def add_food():
+    food_name = request.form['foodName']
+    food_price = request.form['foodPrice']
+    food_quantity = request.form['foodQuantity']
+
+    cur = mysql.connection.cursor()
+    cur.execute("INSERT INTO menu (name, price, count) VALUES (%s, %s, %s)",
+                (food_name, food_price, food_quantity))
+    mysql.connection.commit()
+    cur.close()
+    flash("Food item added successfully!")  # Flash success message
+    return redirect(url_for('admin_dashboard'))
+
+
+# API Endpoint to retrieve all food items
+@app.route('/view_food', methods=['GET'])
+def view_food():
+    cur1 = mysql.connection.cursor()
+    cur1.execute("SELECT name,price,quantity FROM menu")
+    food_item = cur1.fetchall()
+    cur1.close()
+    
+    return render_template('adminpage.html', food_item=food_item)
+
+# API Endpoint to modify food item
+@app.route('/modify_food', methods=['POST'])
+def modify_food():
+    modify_food_name = request.form['modifyFood']
+    new_food_name = request.form['modifyFoodName']
+    new_price = request.form['modifyFoodPrice']
+    new_quantity = request.form['modifyFoodQuantity']
+
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE menu SET name = %s, price = %s, count = %s WHERE name = %s",
+                (new_food_name, new_price, new_quantity, modify_food_name))
+    mysql.connection.commit()
+    cur.close()
+    flash("Food item modified successfully!")  # Flash success message
+    return redirect(url_for('admin_dashboard'))
+
+# API Endpoint to delete food item
+@app.route('/delete_food', methods=['POST'])
+def delete_food():
+    food_name = request.form['deleteFoodName']
+
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM menu WHERE name = %s", (food_name,))
+    mysql.connection.commit()
+    cur.close()
+    flash("Food item deleted successfully!")  # Flash success message
+    return redirect(url_for('admin_dashboard'))
+
 @app.route('/admin_dashboard')
 def admin_dashboard():
     return render_template('adminpage.html')
-
+  
 # Start the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
+
