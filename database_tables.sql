@@ -11,7 +11,7 @@ CREATE TABLE user (
 
 CREATE TABLE admin (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
     email VARCHAR(50) UNIQUE
 );
 
@@ -19,8 +19,9 @@ CREATE TABLE menu (
     menu_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    quantity INT NOT NULL,
+    quantity INT NOT NULL default 1,
     admin_id INT,
+    count integer,
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
 );
 

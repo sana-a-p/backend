@@ -3,18 +3,26 @@ from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-  # Enable CORS for all routes
+HOST = "localhost"
+USER = "root"
+PASSWORD = ""
+DATABASE = "fooddelivery"
 
+# Enable CORS for all routes
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = os.urandom(24)
+
 # MySQL configurations
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'san@06FEB2004'
-app.config['MYSQL_DB'] = 'fooddelivery'
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = USER
+app.config['MYSQL_PASSWORD'] = PASSWORD
+app.config['MYSQL_DB'] = DATABASE
+app.config['MYSQL_HOST'] = HOST
 
 mysql = MySQL(app)
 
@@ -45,6 +53,7 @@ def user_login():
 # Admin login handling
 @app.route('/admin_login', methods=['POST'])
 def admin_login():
+    print(request.form)
     email = request.form['email']
     password = request.form['password']
 
@@ -108,16 +117,6 @@ def add_food():
     return redirect(url_for('admin_dashboard'))
 
 
-# API Endpoint to retrieve all food items
-@app.route('/view_food', methods=['GET'])
-def view_food():
-    cur1 = mysql.connection.cursor()
-    cur1.execute("SELECT name,price,quantity FROM menu")
-    food_item = cur1.fetchall()
-    cur1.close()
-    
-    return render_template('adminpage.html', food_item=food_item)
-
 # API Endpoint to modify food item
 @app.route('/modify_food', methods=['POST'])
 def modify_food():
@@ -148,7 +147,12 @@ def delete_food():
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
-    return render_template('adminpage.html')
+    cur1 = mysql.connection.cursor()
+    cur1.execute("SELECT name, price, quantity FROM menu")
+    food_item = cur1.fetchall()
+    cur1.close()
+    
+    return render_template('adminpage.html', food_item=food_item)
   
 # Start the Flask app
 if __name__ == '__main__':
