@@ -6,7 +6,7 @@
     <title>Admin Page - Food Management</title>
     <style>
         * {
-            box-sizing:content-box;
+            box-sizing: content-box;
             margin: 0;
             padding: 0;
         }
@@ -36,7 +36,6 @@
             margin-top: 80px;
             overflow-y: auto; /* Allow scrolling if content overflows */
             height: calc(100vh - 80px);
-
         }
 
         nav ul {
@@ -58,6 +57,7 @@
             padding: 20px;
         }
 
+      
         section {
             display: none; /* Hide all sections initially */
             background: white;
@@ -66,13 +66,15 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-top: 80px;
-            overflow-y: auto; /* Allow scrolling if content overflows */
+            overflow-y: auto;
             height: calc(100vh - 80px);
         }
 
-        section.active {
-            display: block; /* Show the active section */
+        /* Show the active section */
+        section:target {
+            display: block;
         }
+
 
         h2 {
             margin-bottom: 15px;
@@ -116,6 +118,70 @@
             bottom: 0;
             width: 100%;
         }
+
+        /* Flash message styles */
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .flashes li {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Success message */
+        .flashes .success {
+            background-color: #28a745;
+        }
+
+        /* Error message */
+        .flashes .error {
+            background-color: #dc3545;
+        }
+
+        /* Info message */
+        .flashes .info {
+            background-color: #17a2b8;
+        }
+
+        /* General animation for flash messages */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Apply animation to each flash message */
+        .flashes li {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Add a close button to flash messages */
+        .flashes .close {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+
     </style>
 </head>
 <body>
@@ -125,72 +191,104 @@
 
     <nav>
         <ul>
-            <li><a href="#" onclick="showSection('add-food')">Add</a></li>
-            <li><a href="#" onclick="showSection('view-food')">View</a></li>
-            <li><a href="#" onclick="showSection('modify-food')">Modify</a></li>
-            <li><a href="#" onclick="showSection('delete-food')">Delete</a></li>
+            <li><a href="#add-food">Add</a></li>
+            <li><a href="#view-food">View</a></li>
+            <li><a href="#modify-food">Modify</a></li>
+            <li><a href="#delete-food">Delete</a></li>
         </ul>
     </nav>
 
     <main>
-        <section id="add-food" class="active">
+        {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <ul class="flashes">
+                            {% for message in messages %}
+                                <li class="success">{{ message }}
+                                    <span class="close" onclick="this.parentElement.style.display='none';">&times;</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+        <section id="add-food" class="{{ 'active' if active_section == 'add-food' else '' }}">
             <h2>Add Food Item</h2>
-            <form id="addFoodForm">
+            <form action="/add_food" method="POST">
                 <label for="foodName">Food Name:</label>
-                <input type="text" id="foodName" required>
+                <input type="text" name="foodName" id="foodName" required>
                 <label for="foodPrice">Price:</label>
-                <input type="number" id="foodPrice" required>
+                <input type="number" name="foodPrice" id="foodPrice" required>
                 <label for="foodQuantity">Quantity:</label>
-                <input type="number" id="foodQuantity" required>
+                <input type="number" name="foodQuantity" id="foodQuantity" required>
                 <button type="submit">Add Food</button>
+    
+                <!-- Flash message area -->
+                
             </form>
         </section>
-
-        <section id="view-food">
+    
+        <section id="view-food" >
             <h2>View Food Items</h2>
             <table id="foodTable">
                 <thead>
                     <tr>
-                        <th>Food Name </th>
-                        <th>Price </th>
-                        <th>Quantity </th>
+                        <th>Food Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Dynamic rows will be added here -->
+                    {% if food_item %}
+                        {% for item in food_item %}
+                        <tr>
+                            <td>{{ item[0] }}</td>  <!-- Food Name -->
+                            <td>{{ item[1] }}</td>  <!-- Price -->
+                            <td>{{ item[2] }}</td>  <!-- Quantity -->
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="3">No food items available.</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
-            </table>
+            </table>            
         </section>
-
-        <section id="modify-food">
+        
+    
+        <section id="modify-food" class="{{ 'active' if active_section == 'modify-food' else '' }}">
             <h2>Modify Food Item</h2>
-            <form id="modifyFoodForm">
+            <form action="/modify_food" method="POST">
                 <label for="modifyFood">Food to be modified:</label>
-                <input type="text" id="modifyFood" required>
+                <input type="text" name="modifyFood" id="modifyFood" required>
                 <label for="modifyFoodName">New Food Name:</label>
-                <input type="text" id="modifyFoodName" required>
+                <input type="text" name="modifyFoodName" id="modifyFoodName" required>
                 <label for="modifyFoodPrice">New Price:</label>
-                <input type="number" id="modifyFoodPrice" required>
+                <input type="number" name="modifyFoodPrice" id="modifyFoodPrice" required>
                 <label for="modifyFoodQuantity">New Quantity:</label>
-                <input type="number" id="modifyFoodQuantity" required>
+                <input type="number" name="modifyFoodQuantity" id="modifyFoodQuantity" required>
                 <button type="submit">Modify Food</button>
             </form>
         </section>
-
-        <section id="delete-food">
+    
+        <section id="delete-food" class="{{ 'active' if active_section == 'delete-food' else '' }}">
             <h2>Delete Food Item</h2>
-            <form id="deleteFoodForm">
+            <form action="/delete_food" method="POST">
                 <label for="deleteFoodName">Food Name:</label>
-                <input type="text" id="deleteFoodName" required>
+                <input type="text" name="deleteFoodName" id="deleteFoodName" required>
                 <button type="submit">Delete Food</button>
             </form>
         </section>
     </main>
+    
 
     <footer>
         <p>&copy; 2024 Online Food Ordering System</p>
     </footer>
-
-    
 </body>
 </html>
+
+       
+         
+          
+
+  
