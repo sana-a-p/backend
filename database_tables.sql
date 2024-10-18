@@ -11,7 +11,7 @@ CREATE TABLE user (
 
 CREATE TABLE admin (
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
     email VARCHAR(50) UNIQUE
 );
 

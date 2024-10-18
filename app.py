@@ -4,17 +4,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_cors import CORS
 
+HOST = "localhost"
+USER = "root"
+PASSWORD = "Socket@11"
+DATABASE = "fooddelivery"
 
-  # Enable CORS for all routes
-
+# Enable CORS for all routes
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = os.urandom(24)
+
 # MySQL configurations
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'san@06FEB2004'
-app.config['MYSQL_DB'] = 'fooddelivery'
-app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = USER
+app.config['MYSQL_PASSWORD'] = PASSWORD
+app.config['MYSQL_DB'] = DATABASE
+app.config['MYSQL_HOST'] = HOST
 
 mysql = MySQL(app)
 
@@ -45,6 +49,7 @@ def user_login():
 # Admin login handling
 @app.route('/admin_login', methods=['POST'])
 def admin_login():
+    print(request.form)
     email = request.form['email']
     password = request.form['password']
 
