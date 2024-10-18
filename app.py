@@ -3,21 +3,19 @@ from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from flask_cors import CORS
-from dotenv import load_dotenv
-import os
 
+from dotenv import load_dotenv
 load_dotenv()
 
-HOST = "localhost"
-USER = "root"
-PASSWORD = ""
-DATABASE = "fooddelivery"
+USER = os.getenv('USER')
+PASSWORD = os.getenv('PASSWORD')
+DATABASE = os.getenv('DATABASE')
+HOST = os.getenv('HOST')
+  # Enable CORS for all routes
 
-# Enable CORS for all routes
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = os.urandom(24)
-
 # MySQL configurations
 app.config['MYSQL_USER'] = USER
 app.config['MYSQL_PASSWORD'] = PASSWORD
@@ -53,7 +51,6 @@ def user_login():
 # Admin login handling
 @app.route('/admin_login', methods=['POST'])
 def admin_login():
-    print(request.form)
     email = request.form['email']
     password = request.form['password']
 
@@ -109,12 +106,25 @@ def add_food():
     food_quantity = request.form['foodQuantity']
 
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO menu (name, price, count) VALUES (%s, %s, %s)",
+    cur.execute("INSERT INTO menu (name, price, quantity) VALUES (%s, %s, %s)",
                 (food_name, food_price, food_quantity))
     mysql.connection.commit()
     cur.close()
     flash("Food item added successfully!")  # Flash success message
     return redirect(url_for('admin_dashboard'))
+
+
+# API Endpoint to retrieve all food items
+@app.route('/view_food', methods=['GET'])
+def view_food():
+    cur = mysql.connection.cursor()
+    # Query the menu table to get all food items
+    cur.execute("SELECT name, price, quantity FROM menu")
+    food_items = cur.fetchall()  # Fetch all rows from the query
+    cur.close()
+    
+    # Pass the retrieved data to the template
+    return render_template('adminpage.html', food_item=food_items)
 
 
 # API Endpoint to modify food item
@@ -126,7 +136,7 @@ def modify_food():
     new_quantity = request.form['modifyFoodQuantity']
 
     cur = mysql.connection.cursor()
-    cur.execute("UPDATE menu SET name = %s, price = %s, count = %s WHERE name = %s",
+    cur.execute("UPDATE menu SET name = %s, price = %s, quantity = %s WHERE name = %s",
                 (new_food_name, new_price, new_quantity, modify_food_name))
     mysql.connection.commit()
     cur.close()
@@ -153,8 +163,12 @@ def admin_dashboard():
     cur1.close()
     
     return render_template('adminpage.html', food_item=food_item)
-  
+
+
+
+
 # Start the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
+
 
