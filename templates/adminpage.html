@@ -181,7 +181,37 @@
             font-weight: bold;
             color: white;
         }
+        #foodTable {
+        width: 100%;
+        border-collapse: collapse; /* Remove extra spacing between cells */
+        margin: 20px 0;
+        font-size: 18px;
+        text-align: left;
+    }
 
+    #foodTable th, #foodTable td {
+        border: 1px solid #ddd; /* Add borders to the table */
+        padding: 12px 15px; /* Add padding to the table cells */
+    }
+
+    #foodTable th {
+        background-color: #f4f4f4; /* Light background color for header */
+        font-weight: bold;
+    }
+
+    #foodTable tr:nth-child(even) {
+        background-color: #f9f9f9; /* Zebra stripes on the rows */
+    }
+
+    #foodTable tr:hover {
+        background-color: #f1f1f1; /* Row hover effect */
+    }
+
+    #view-food h2 {
+        text-align: center;
+        margin-top: 20px;
+        font-family: Arial, sans-serif;
+    }
     </style>
 </head>
 <body>
@@ -287,8 +317,3 @@
 </body>
 </html>
 
-       
-         
-          
-
-  
