@@ -6,87 +6,54 @@
     <title>Signup Page</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #fff;  /* Set background color to white */
+            font-family: Arial, sans-serif;
+            background-color: #ef6e54;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
         }
-        header {
-            background-color: #f06b3f;  /* Header background color */
-            padding: 20px 30px;  /* Reduced padding for shorter height */
-            display: flex;
-            align-items: center;
-            color: white;
-        }
-        header h1 {
-            margin: 0;  /* Remove margin */
-            font-size: 24px;  /* Size for the website name */
-        }
         .signup-container {
-            background-color: #f9f9f9;  /* Slightly off-white container */
-            padding: 15px;  /* Adjusted padding for smaller height */
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 350px;  /* Compact width */
-            margin: 30px auto;  /* Center the container with some margin */
+            background-color: #fff;
+            padding: 20px 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
         }
         h2 {
             text-align: center;
-            color: #333;
-            font-size: 22px;
-            margin-bottom: 15px;
-            font-weight: 600;
+            margin-bottom: 20px;
         }
         label {
             display: block;
             margin-bottom: 5px;
-            font-size: 14px;
-            color: #555;
         }
         input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            box-sizing: border-box;
-            transition: border 0.3s;
-        }
-        input:focus {
-            border-color: #f06b3f;
-            outline: none;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
         }
         button {
             width: 100%;
             padding: 10px;
-            background-color: #ff7f7f;  /* Light red color */
+            background-color: #ff7f7f;;
             color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 15px;
-            transition: background-color 0.3s ease;
         }
-        
         button:hover {
-            background-color: #ff4c4c;  /* Darker shade of light red for hover */
-        }
-        
-        p {
-            text-align: center;
-            color: red;
-            margin-top: 10px;
+            background-color: #ff4c4c;;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Foodiee</h1>
-    </header>
     <div class="signup-container">
         <h2>Sign Up</h2>
-        <form action="{{ url_for('signup') }}" method="POST">
+        <form action="{{ url_for('signup') }}" method="POST">  <!-- Link to Flask route -->
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
 
@@ -108,8 +75,9 @@
             <button type="submit">Create Account</button>
         </form>
         {% if error %}
-            <p>{{ error }}</p>
+            <p style="color: red;">{{ error }}</p>  <!-- Display errors if any -->
         {% endif %}
     </div>
 </body>
 </html>
+
