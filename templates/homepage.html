@@ -19,7 +19,6 @@
             align-items: center;
             color: white;
         }
-
         header h1 {
             margin: 0;  /* Remove margin */
             font-size: 24px;  /* Size for the website name */
@@ -37,7 +36,7 @@
             padding: 20px;
             margin: 10px 0;
             width: 100%;
-            max-width: 400px;  /* Added max width for responsiveness */
+            max-width: 400px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
@@ -55,17 +54,17 @@
         }
 
         button {
-            width: 100%;  /* Change button width to fill container */
+            width: 100%;
             padding: 10px;
-            background-color: #ff7f7f;  /* Light red color */
+            background-color: #ff7f7f;
             color: #fff;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin-bottom: 10px; /* Added margin for better spacing */
+            margin-bottom: 10px;
         }
-        
+
         button:hover {
             background-color: #ff4c4c;  /* Darker shade of light red for hover */
         }
@@ -92,80 +91,142 @@
         .signup-button:hover {
             background-color: #2563eb; /* Darker blue on hover */
         }
-
         .account-text {
             text-align: center;
             margin: 10px 0;
             font-size: 14px;
         }
+        
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .flashes li {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Success message */
+        .flashes .success {
+            background-color: #28a745;
+        }
+
+        /* Error message */
+        .flashes .error {
+            background-color: #dc3545;
+        }
+
+        /* Info message */
+        .flashes .info {
+            background-color: #17a2b8;
+        }
+
+        /* General animation for flash messages */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Apply animation to each flash message */
+        .flashes li {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Add a close button to flash messages */
+        .flashes .close {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+
     </style>
     <title>Online Food Ordering System</title>
 </head>
 <body>
     <header>
-        <h1>Foodiee</h1>
+        <h1>Welcome to Foodie!!!</h1>
     </header>
 
     <main>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li class="error">{{ message }}
+                        <span class="close" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
         <section id="userLogin">
             <h2>User Login</h2>
-            <form action="/" method="POST" id="userLoginForm">
+            <form action="/" method="POST" id="userLoginForm"> <!-- Set action to submit to the Flask route -->
+                
                 <label for="userEmail">Email:</label>
-                <input type="email" id="userEmail" name="email" required>
+                <input type="email" id="userEmail" name="email" required> <!-- Use unique IDs -->
                 
                 <label for="userPassword">Password:</label>
                 <input type="password" id="userPassword" name="password" required>
-
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                  <ul>
-                    {% for message in messages %}
-                      <li style="color: red;">{{ message }}</li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-                {% endwith %}
                 
                 <button type="submit">Login</button>
-
-                <p class="account-text">Already have an account?</p> <!-- Added text here -->
+                <p class="account-text">New user?</p> 
                 <a href="/signuppage.html" style="width: 100%;">
                     <button type="button" class="signup-button">Signup</button>
                 </a>
                 <button type="button" class="toggle-button" onclick="toggleLogin()">Switch to Admin Login</button>
+                
             </form>
+            
         </section>
 
         <section id="adminLogin" style="display: none;">
             <h2>Admin Login</h2>
-            <form action="/admin_login" method="POST" id="adminLoginForm">
+            <form action="/admin_login" method="POST" id="adminLoginForm"> <!-- Create a separate action for admin login -->
                 <label for="adminEmail">Email:</label>
                 <input type="email" id="adminEmail" name="email" required>
 
                 <label for="adminPassword">Password:</label>
                 <input type="password" id="adminPassword" name="password" required>
 
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul>
-                        {% for message in messages %}
-                        <li style="color: red;">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-                {% endwith %}
                 
+                <p class="account-text">Already have an account?</p> 
                 <button type="submit">Login</button>
                 <button type="button" class="toggle-button" onclick="toggleLogin()">Switch to User Login</button>
             </form>
+            
         </section>
+        
     </main>
 
+    <footer>
+        <p>&copy; 2024 Foodie. All rights reserved.</p>
+    </footer>
     <script>
         function toggleLogin() {
             const userLoginSection = document.getElementById('userLogin');
             const adminLoginSection = document.getElementById('adminLogin');
-
             if (userLoginSection.style.display === 'none') {
                 userLoginSection.style.display = 'block';
                 adminLoginSection.style.display = 'none';
@@ -177,3 +238,4 @@
     </script>
 </body>
 </html>
+
