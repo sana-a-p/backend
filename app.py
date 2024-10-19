@@ -43,6 +43,13 @@ def user_login():
 
     # Check if user exists and if the password matches
     if user and check_password_hash(user[0], password):
+        cur = mysql.connection.cursor()
+        try:
+           
+            cur.execute("INSERT INTO orders (email) VALUES (%s)", (email,))
+            mysql.connection.commit()
+        finally:
+            cur.close()
         return redirect(url_for('menu'))
     else:
         flash("Invalid email or password!")
@@ -56,6 +63,7 @@ def admin_login():
 
     cur = mysql.connection.cursor()
     try:
+       
         cur.execute("SELECT password FROM admin WHERE email = %s", (email,))
         admin = cur.fetchone()
     finally:
@@ -89,14 +97,9 @@ def signup():
         mysql.connection.commit()
         cur.close()
 
-        return redirect(url_for('menu'))
-    
+        return render_template('menupage.html')
     return render_template('signuppage.html')
 
-# Route for menu page
-@app.route('/menu')
-def menu():
-    return render_template('menupage.html')
 
 
 @app.route('/add_food', methods=['POST'])
@@ -115,16 +118,6 @@ def add_food():
 
 
 # API Endpoint to retrieve all food items
-@app.route('/view_food', methods=['GET'])
-def view_food():
-    cur = mysql.connection.cursor()
-    # Query the menu table to get all food items
-    cur.execute("SELECT name, price, quantity FROM menu")
-    food_items = cur.fetchall()  # Fetch all rows from the query
-    cur.close()
-    
-    # Pass the retrieved data to the template
-    return render_template('adminpage.html', food_item=food_items)
 
 
 # API Endpoint to modify food item
@@ -164,11 +157,75 @@ def admin_dashboard():
     
     return render_template('adminpage.html', food_item=food_item)
 
+@app.route('/menu')
+def menu():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT name, price, quantity FROM menu")
+    food_items = cur.fetchall()  # Fetch all items from the menu table
+    cur.close()
+
+    return render_template('menupage.html', food_items=food_items)
+
+@app.route('/place_order', methods=['POST'])
+def place_order():
+    order_items = request.form  # Access the submitted form data
+    cur = mysql.connection.cursor()
+
+    # List to store the selected food items
+    selected_items = []
+
+    # Loop through form data to process each item
+    for food_name, count_str in order_items.items():
+        try:
+            count = int(count_str)
+        except ValueError:
+            count = 0  # If count is not a valid integer, treat it as zero
+
+        if count > 0:
+            # Fetch food item from the menu
+            cur.execute("SELECT quantity, price FROM menu WHERE name = %s", (food_name,))
+            menu_item = cur.fetchone()
+
+            if menu_item:
+                available_quantity, price = menu_item
+
+                # Validate if the user-selected count does not exceed available stock
+                if count > available_quantity:
+                    flash(f"Not enough stock for {food_name}. Available: {available_quantity}.")
+                    return redirect(url_for('menu'))
+
+                # Prepare item for order details
+                selected_items.append({
+                    'name': food_name,
+                    'count': count,
+                    'price': price
+                })
+
+    if not selected_items:
+        flash("No items selected or invalid quantities entered.")
+        return redirect(url_for('menu'))
+
+    # Insert each selected item into order_details and update menu stock
+    for item in selected_items:
+        cur.execute("SELECT order_id from orders")
+        order_id = cur.fetchone()[0]
+        cur.execute("INSERT INTO order_details (order_id,food_name, price, count) VALUES (%s, %s, %s, %s)",
+                    (order_id, item['name'], item['price'], item['count']))
+        # Update the menu quantity
+        cur.execute("UPDATE menu SET quantity = quantity - %s WHERE name = %s", (item['count'], item['name']))
+    
+    mysql.connection.commit()
+    cur.close()
+
+    flash("Order placed successfully!")
+    return redirect(url_for('menu'))
 
 
 
 # Start the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 
 
