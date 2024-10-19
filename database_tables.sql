@@ -27,16 +27,14 @@ CREATE TABLE menu (
 
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    food_name VARCHAR(100) NOT NULL,
-    address VARCHAR(250) NOT NULL,
+    email varchar(50),
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 ) AUTO_INCREMENT = 100;
 
 CREATE TABLE order_details (
-    order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,
-    name VARCHAR(100) NOT NULL,
+    food_name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     menu_id INT,
     count INT NOT NULL,
