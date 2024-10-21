@@ -97,7 +97,7 @@ def signup():
         mysql.connection.commit()
         cur.close()
 
-        return render_template('menupage.html')
+        return redirect(url_for('home'))
     return render_template('signuppage.html')
 
 
@@ -206,21 +206,25 @@ def place_order():
         return redirect(url_for('menu'))
 
     # Insert each selected item into order_details and update menu stock
+    cur.execute("SELECT order_id from orders ORDER BY order_id DESC LIMIT 1;")
+    order_id = cur.fetchone()[0]
+
+    total_price = 0  # Initialize total price
+
     for item in selected_items:
-        cur.execute("SELECT order_id from orders")
-        order_id = cur.fetchone()[0]
-        cur.execute("INSERT INTO order_details (order_id,food_name, price, count) VALUES (%s, %s, %s, %s)",
+        cur.execute("INSERT INTO order_details (order_id, food_name, price, count) VALUES (%s, %s, %s, %s)",
                     (order_id, item['name'], item['price'], item['count']))
         # Update the menu quantity
         cur.execute("UPDATE menu SET quantity = quantity - %s WHERE name = %s", (item['count'], item['name']))
-    
+
+        # Calculate total price
+        total_price += item['price'] * item['count']
+
     mysql.connection.commit()
     cur.close()
-
     flash("Order placed successfully!")
-    return redirect(url_for('menu'))
-
-
+    # Pass the order details to the template
+    return render_template('orderpage.html', order_items=selected_items, total_price=total_price)
 
 # Start the Flask app
 if __name__ == '__main__':
